@@ -1,0 +1,10 @@
+<div class="container">
+    <h2>Book Room</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <label>Check-In Date</label>
+        <input type="date" formControlName="checkIn" required>
+        <label>Check-Out Date</label>
+        <input type="date" formControlName="checkOut" required>
+        <button type="submit">Confirm Booking</button>
+    </form>
+</div>
