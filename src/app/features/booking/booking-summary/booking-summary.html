@@ -1,1 +1,45 @@
-<p>booking-summary works!</p>
+<div class="container"> 
+    <h2>Booking Summary</h2>
+    <p *ngIf="isLoading && !hasLoadedBookings">Loading bookings...</p>
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <p *ngIf="hasLoadedBookings && !isLoading && !errorMessage && bookings.length === 0">There are no bookings made.</p>
+    <div *ngFor="let b of bookings" class="card">
+        <p><b>Booking ID:</b> {{ b.bookingId }}</p>
+        <p><b>Hotel:</b> {{ b.hotelName }}</p>
+        <p><b>Room:</b> {{ b.roomType }}<span *ngIf="b.roomNumber"> - #{{ b.roomNumber }}</span></p>
+        <p><b>Status:</b> {{ b.status }}</p>
+        <p><b>Total Amount:</b> ${{ getDisplayedTotalAmount(b) }}</p>
+
+        <div *ngIf="editingBookingId === b.bookingId; else bookingDates">
+            <p>
+                <b>Check-in:</b>
+                <input type="date" [(ngModel)]="editCheckIn" #checkInInput />
+            </p>
+            <p>
+                <b>Check-out:</b>
+                <input type="date" [(ngModel)]="editCheckOut" #checkOutInput />
+            </p>
+            <button
+                type="button"
+                [disabled]="savingBookingIds.has(b.bookingId)"
+                (click)="saveEdit(b, checkInInput.value, checkOutInput.value)">
+                {{ savingBookingIds.has(b.bookingId) ? 'Saving...' : 'Save' }}
+            </button>
+            <button type="button" (click)="cancelEdit()">Cancel Edit</button>
+        </div>
+
+        <ng-template #bookingDates>
+            <p><b>Check-in:</b> {{ b.checkIn | date }}</p>
+            <p><b>Check-out:</b> {{ b.checkOut | date }}</p>
+        </ng-template>
+
+        <button type="button" *ngIf="canModifyBooking(b) && editingBookingId !== b.bookingId" (click)="startEdit(b)">Update Booking</button>
+        <button
+            type="button"
+            *ngIf="canModifyBooking(b) && editingBookingId !== b.bookingId"
+            [disabled]="cancellingBookingIds.has(b.bookingId)"
+            (click)="cancel(b.bookingId)">
+            {{ cancellingBookingIds.has(b.bookingId) ? 'Cancelling...' : 'Cancel Booking' }}
+        </button>
+    </div>
+</div>

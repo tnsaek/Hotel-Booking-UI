@@ -1,5 +1,24 @@
 .footer {
     text-align: center;
-    padding: 10px;
-    background: #eee;
+    padding: 2rem 1rem;
+    background: #3b4ad3;
+    color: #fff;
+    border-top: 1px solid #555;
+    margin-top: auto;
+    flex-shrink: 0;
+    width: 100%;
+
+    p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    a {
+        color: #007bff;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
 }

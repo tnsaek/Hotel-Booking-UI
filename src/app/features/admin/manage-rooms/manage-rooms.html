@@ -1,1 +1,108 @@
-<p>manage-rooms works!</p>
+<section class="manage-rooms">
+  <div class="header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Manage Rooms</h1>
+      <p class="subtitle">Add rooms to a selected hotel and control room availability.</p>
+    </div>
+  </div>
+
+  <div class="hotel-selector">
+    <label>
+      <span>Hotel</span>
+      <select
+        [value]="selectedHotelId"
+        (change)="selectHotel(+$any($event.target).value)"
+        [disabled]="isLoadingHotels || hotels.length === 0"
+      >
+        <option *ngFor="let hotel of hotels" [value]="hotel.id">
+          {{ hotel.name }} - {{ hotel.location }}
+        </option>
+      </select>
+    </label>
+  </div>
+
+  <div class="layout">
+    <div class="panel form-panel">
+      <h2>{{ editingRoomId ? 'Update Room' : 'Add Room' }}</h2>
+
+      <form [formGroup]="roomForm" (ngSubmit)="onSubmit()">
+        <label>
+          <span>Room Number</span>
+          <input type="number" formControlName="roomNumber" min="1" placeholder="101" />
+        </label>
+
+        <label>
+          <span>Room Type</span>
+          <select formControlName="type">
+            <option *ngFor="let type of roomTypes" [value]="type">{{ type }}</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Price Per Night</span>
+          <input type="number" formControlName="price" min="0.01" step="0.01" placeholder="120.00" />
+        </label>
+
+        <label class="checkbox-row">
+          <input type="checkbox" formControlName="available" />
+          <span>Available for booking</span>
+        </label>
+
+        <label>
+          <span>Description</span>
+          <textarea rows="4" formControlName="description" placeholder="Room notes or amenities"></textarea>
+        </label>
+
+        <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+        <p class="message success" *ngIf="successMessage">{{ successMessage }}</p>
+
+        <div class="actions">
+          <button type="submit" [disabled]="isSaving || !selectedHotelId">
+            {{ isSaving ? 'Saving...' : (editingRoomId ? 'Update Room' : 'Add Room') }}
+          </button>
+          <button type="button" class="secondary" *ngIf="editingRoomId" (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel list-panel">
+      <div class="list-header">
+        <h2>Hotel Rooms</h2>
+        <button type="button" class="secondary" (click)="loadRooms()" [disabled]="isLoadingRooms || !selectedHotelId">
+          {{ isLoadingRooms ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
+
+      <p class="empty-state" *ngIf="!isLoadingRooms && rooms.length === 0">No rooms found for this hotel.</p>
+
+      <div class="room-card" *ngFor="let room of rooms">
+        <div class="room-card__content">
+          <div>
+            <h3>Room {{ room.roomNumber }}</h3>
+            <p class="type">{{ room.type }}</p>
+          </div>
+          <p>${{ room.price }} per night</p>
+          <p>{{ room.description || 'No description provided.' }}</p>
+          <span class="status" [class.unavailable]="!room.available">
+            {{ room.available ? 'Available' : 'Unavailable' }}
+          </span>
+        </div>
+
+        <div class="room-card__actions">
+          <button type="button" class="secondary" (click)="editRoom(room)">Edit</button>
+          <button
+            type="button"
+            class="danger"
+            (click)="deleteRoom(room)"
+            [disabled]="isDeletingId === room.id"
+          >
+            {{ isDeletingId === room.id ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,6 +1,10 @@
 <div class="container">
     <h2>Available Hotels</h2>
 
+    <p *ngIf="isLoading">Loading hotels...</p>
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <p *ngIf="!isLoading && !errorMessage && hotels.length === 0">No hotels available.</p>
+
     <div *ngFor="let hotel of hotels" class="card">
         <h3>{{ hotel.name }}</h3>
         <p>{{ hotel.location }}</p>

@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-payment-failure',
+  selector: 'app-about',
   standalone: true,
   imports: [RouterModule],
-  templateUrl: './payment-failure.html',
-  styleUrl: './payment-failure.scss',
+  templateUrl: './about.html',
+  styleUrl: './about.scss',
 })
-export class PaymentFailure {}
+export class About {}

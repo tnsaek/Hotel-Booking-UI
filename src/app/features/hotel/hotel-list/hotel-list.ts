@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { HotelService } from '../../../services/hotel-service';
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Hotel } from '../../../models/hotel';
 
 @Component({
@@ -12,14 +11,16 @@ import { Hotel } from '../../../models/hotel';
   styleUrl: './hotel-list.scss',
 })
 export class HotelList implements OnInit {
+  private route = inject(ActivatedRoute);
 
   hotels: Hotel[] = [];
-
-  constructor(private hotelService: HotelService) {}
+  isLoading = true;
+  errorMessage = '';
 
   ngOnInit(): void {
-    this.hotelService.getHotels().subscribe((hotels) => {
-      this.hotels = hotels;
+    this.route.data.subscribe((data) => {
+      this.hotels = (data['hotels'] as Hotel[]) ?? [];
+      this.isLoading = false;
     });
   }
 }

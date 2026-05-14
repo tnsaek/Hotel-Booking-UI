@@ -1,10 +1,51 @@
-<div class="container">
-    <h2>Book Room</h2>
-    <form [formGroup]="form" (ngSubmit)="submit()">
-        <label>Check-In Date</label>
-        <input type="date" formControlName="checkIn" required>
-        <label>Check-Out Date</label>
-        <input type="date" formControlName="checkOut" required>
-        <button type="submit">Confirm Booking</button>
+<div class="booking-container">
+  <div class="booking-card">
+    <h2>Book Your Room</h2>
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="dateConflictMessage" class="error-message booking-conflict">
+      {{ dateConflictMessage }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="booking-form">
+      <div class="form-group">
+        <label for="checkIn">Check-In Date</label>
+        <input
+          id="checkIn"
+          type="date"
+          formControlName="checkIn"
+          class="form-control"
+          [class.error]="form.get('checkIn')?.invalid && form.get('checkIn')?.touched"
+          [min]="getTodayDate()">
+        <div *ngIf="form.get('checkIn')?.errors?.['pastDate'] && form.get('checkIn')?.touched" class="error-message">
+          Check-in date must be today or later
+        </div>
+        <div *ngIf="form.get('checkIn')?.errors?.['required'] && form.get('checkIn')?.touched" class="error-message">
+          Check-in date is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="checkOut">Check-Out Date</label>
+        <input
+          id="checkOut"
+          type="date"
+          formControlName="checkOut"
+          class="form-control"
+          [class.error]="form.get('checkOut')?.invalid && form.get('checkOut')?.touched"
+          [min]="getTomorrowDate()">
+        <div *ngIf="form.hasError('invalidRange') && form.get('checkOut')?.touched" class="error-message">
+          Check-out date must be after check-in date
+        </div>
+        <div *ngIf="form.get('checkOut')?.errors?.['required'] && form.get('checkOut')?.touched" class="error-message">
+          Check-out date is required
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="form.invalid || isSubmitting" class="btn-book">
+        {{ isSubmitting ? 'Creating Booking...' : 'Confirm Booking' }}
+      </button>
     </form>
+  </div>
 </div>

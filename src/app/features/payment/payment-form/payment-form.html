@@ -1,10 +1,24 @@
-<div class="container">
-    <h2>Payment</h2>
-    <form [formGroup]="form" (ngSubmit)="submit()">
-            <label>Amount</label>
-            <input type="number" formControlName="amount">
-            <label>Card Number</label>
-            <input type="text" formControlName="cardNumber">
-        <button type="submit" class="btn btn-primary">Pay Now</button>
-    </form>
+<div class="payment-container">
+  <div class="payment-card">
+    <h2>Complete Your Payment</h2>
+    <p *ngIf="isLoading">Loading payment details...</p>
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+    <div *ngIf="!isLoading && !errorMessage" class="payment-form">
+      <div class="form-group">
+        <label for="amount">Amount ($)</label>
+        <input
+          id="amount"
+          type="number"
+          [value]="bookingAmount ?? ''"
+          readonly
+          class="form-control"
+        />
+      </div>
+
+      <button type="button" (click)="startCheckout()" [disabled]="isSubmitting || bookingAmount === null" class="btn-payment">
+        {{ isSubmitting ? 'Opening Stripe...' : 'Pay with Stripe' }}
+      </button>
+    </div>
+  </div>
 </div>

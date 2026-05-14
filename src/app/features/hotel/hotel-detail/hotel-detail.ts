@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { HotelService } from '../../../services/hotel-service';
 import { Hotel } from '../../../models/hotel';
 import { Room } from '../../../models/room';
+import { HotelDetailData } from '../../../resolvers/hotel-detail-resolver';
 
 @Component({
   selector: 'app-hotel-detail',
@@ -15,18 +15,16 @@ import { Room } from '../../../models/room';
 export class HotelDetail implements OnInit {
 
   private route = inject(ActivatedRoute);
-  private hotelService = inject(HotelService);
-
-  hotel!: Hotel;
-  rooms: Room[] = [];
+  hotel: Hotel | null = null;
+  availableRooms: Room[] = [];
+  errorMessage = '';
 
   ngOnInit(): void {
-    const hotelId = Number(this.route.snapshot.paramMap.get('id'));
-    this.hotelService.getHotelById(hotelId).subscribe((hotel) => {
-      this.hotel = hotel;
-    });
-    this.hotelService.getRoomsByHotel(hotelId).subscribe((rooms) => {
-      this.rooms = rooms;
+    this.route.data.subscribe((data) => {
+      const detail = data['detail'] as HotelDetailData;
+      this.hotel = detail?.hotel ?? null;
+      this.availableRooms = (detail?.rooms ?? []).filter((room) => room.available);
+      this.errorMessage = this.hotel ? '' : 'Failed to load hotel details.';
     });
   }
 }

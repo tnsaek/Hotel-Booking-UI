@@ -2,13 +2,140 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px;
-  background: #1976d2;
+  padding: 15px 2rem;
+  background: #3b4ad3;
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.links {
+  display: flex;
+  gap: 2rem;
 }
 
 .links a {
-  margin-left: 15px;
+  margin-left: 0;
   text-decoration: none;
   color: white;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #007bff;
+  }
+}
+
+.links button {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: transparent;
+  color: white;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.notifications {
+  position: relative;
+}
+
+.notification-button {
+  position: relative;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.35rem;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.notification-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 20;
+  width: min(340px, 90vw);
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid #d7dbe7;
+  border-radius: 8px;
+  background: white;
+  color: #111827;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.notification-header button {
+  border: 0;
+  color: #3b4ad3;
+  padding: 0;
+}
+
+.empty-notifications {
+  margin: 0;
+  padding: 0.85rem;
+}
+
+.notification-item {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  border: 0;
+  border-bottom: 1px solid #eef0f4;
+  border-radius: 0;
+  color: #111827;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.notification-item.unread {
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.notification-item.expanded {
+  background: #ffffff;
+}
+
+.notification-title {
+  display: block;
+  color: #111827;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.notification-message {
+  display: block;
+  margin-top: 0.35rem;
+  color: #111827;
+  line-height: 1.35;
+  white-space: normal;
+  font-weight: 400;
+}
+
+.notification-item small {
+  color: #6b7280;
+  font-weight: 400;
 }

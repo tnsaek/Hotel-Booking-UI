@@ -1,1 +1,75 @@
-<p>hotel-search works!</p>
+<div class="search-container">
+  <div class="search-box">
+    <h2>Search Hotels</h2>
+    
+    <form class="search-form" (ngSubmit)="onSearch()">
+      <div class="form-group">
+        <input
+          type="text"
+          name="searchQuery"
+          placeholder="Hotel name"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <input
+          type="text"
+          name="searchLocation"
+          placeholder="Location"
+          [(ngModel)]="searchLocation"
+          (keyup.enter)="onSearch()"
+          class="input-field" />
+      </div>
+
+      <div class="button-group">
+        <button
+          type="submit"
+          class="btn-primary">
+          Search
+        </button>
+        <button
+          type="button"
+          (click)="resetSearch()"
+          class="btn-secondary">
+          Reset
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="isLoadingHotels" class="loading-message">
+      Loading hotels...
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  </div>
+
+  <div class="results-section">
+    <h3 *ngIf="!hasSearched" class="welcome-message">
+      🔍 Enter a hotel name or location to get started
+    </h3>
+    <h3 *ngIf="hasSearched && searchResults.length > 0">
+      Found {{ searchResults.length }} hotel(s)
+    </h3>
+    <h3 *ngIf="hasSearched && searchResults.length === 0" class="no-results">
+      No hotels found matching your search. Try different keywords.
+    </h3>
+
+    <div class="hotels-grid">
+      <div *ngFor="let hotel of searchResults" class="card">
+        <h4>{{ hotel.name }}</h4>
+        <p class="location">📍 {{ hotel.location }}</p>
+        <p class="description">{{ hotel.description }}</p>
+        <button
+          type="button"
+          [routerLink]="['/hotel', hotel.id]"
+          class="btn-view">
+          View Details
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

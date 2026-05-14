@@ -1,1 +1,22 @@
-<p>payment-failure works!</p>
+<div class="failure-container">
+  <div class="failure-card">
+    <div class="failure-icon">❌</div>
+    <h2>Payment Failed</h2>
+    <p>We're sorry, but your payment could not be processed at this time.</p>
+
+    <div class="failure-details">
+      <p><strong>Possible reasons:</strong></p>
+      <ul>
+        <li>Insufficient funds</li>
+        <li>Invalid card details</li>
+        <li>Card expired</li>
+        <li>Technical issue</li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button routerLink="/my-bookings" class="btn-secondary">View My Bookings</button>
+      <button routerLink="/search" class="btn-primary">Try Again</button>
+    </div>
+  </div>
+</div>

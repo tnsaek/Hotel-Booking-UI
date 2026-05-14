@@ -1,2 +1,6 @@
-<p>payment-success works!</p>
-<a routerLink="/">Go Home</a>
+<div class="success-container">
+  <h2>Payment Successful</h2>
+  <p *ngIf="!errorMessage">{{ confirmationMessage }}</p>
+  <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <a routerLink="/my-bookings">View My Bookings</a>
+</div>

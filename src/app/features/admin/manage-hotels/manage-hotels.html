@@ -1,1 +1,76 @@
-<p>manage-hotels works!</p>
+<section class="manage-hotels">
+  <div class="header">
+    <div>
+      <p class="eyebrow">Admin</p>
+      <h1>Manage Hotels</h1>
+      <p class="subtitle">Only admins can create, update, and delete hotel records.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel form-panel">
+      <h2>{{ editingHotelId ? 'Update Hotel' : 'Add Hotel' }}</h2>
+
+      <form [formGroup]="hotelForm" (ngSubmit)="onSubmit()">
+        <label>
+          <span>Name</span>
+          <input type="text" formControlName="name" autocomplete="off" placeholder="Hotel name" />
+        </label>
+
+        <label>
+          <span>Location</span>
+          <input type="text" formControlName="location" autocomplete="address-level2" placeholder="City, country" />
+        </label>
+
+        <label>
+          <span>Description</span>
+          <textarea rows="5" formControlName="description" autocomplete="off" placeholder="Describe the hotel"></textarea>
+        </label>
+
+        <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+        <p class="message success" *ngIf="successMessage">{{ successMessage }}</p>
+
+        <div class="actions">
+          <button type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Saving...' : (editingHotelId ? 'Update Hotel' : 'Add Hotel') }}
+          </button>
+          <button type="button" class="secondary" *ngIf="editingHotelId" (click)="cancelEdit()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel list-panel">
+      <div class="list-header">
+        <h2>Existing Hotels</h2>
+        <button type="button" class="secondary" (click)="loadHotels()" [disabled]="isLoading">
+          {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
+
+      <p class="empty-state" *ngIf="!isLoading && hotels.length === 0">No hotels found.</p>
+
+      <div class="hotel-card" *ngFor="let hotel of hotels">
+        <div class="hotel-card__content">
+          <h3>{{ hotel.name }}</h3>
+          <p class="location">{{ hotel.location }}</p>
+          <p>{{ hotel.description }}</p>
+        </div>
+
+        <div class="hotel-card__actions">
+          <a class="button-link" routerLink="/admin/rooms" [queryParams]="{ hotelId: hotel.id }">Rooms</a>
+          <button type="button" class="secondary" (click)="editHotel(hotel)">Edit</button>
+          <button
+            type="button"
+            class="danger"
+            (click)="deleteHotel(hotel)"
+            [disabled]="isDeletingId === hotel.id"
+          >
+            {{ isDeletingId === hotel.id ? 'Deleting...' : 'Delete' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
