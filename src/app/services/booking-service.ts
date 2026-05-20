@@ -85,7 +85,7 @@ export class BookingService {
   mergeBookings(primary: BookingResponse[], secondary: BookingResponse[]): BookingResponse[] {
     const merged = new Map<number, BookingResponse>();
 
-    [...secondary, ...primary].forEach((booking) => {
+    [...primary, ...secondary].forEach((booking) => {
       merged.set(booking.bookingId, booking);
     });
 

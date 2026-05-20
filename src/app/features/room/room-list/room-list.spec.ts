@@ -13,10 +13,14 @@ describe('RoomList', () => {
 
     fixture = TestBed.createComponent(RoomList);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should render the room list placeholder text', () => {
+    expect(fixture.nativeElement.textContent.trim()).toBe('room-list works!');
   });
 });

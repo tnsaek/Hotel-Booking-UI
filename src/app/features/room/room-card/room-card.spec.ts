@@ -13,10 +13,14 @@ describe('RoomCard', () => {
 
     fixture = TestBed.createComponent(RoomCard);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should render the room card placeholder text', () => {
+    expect(fixture.nativeElement.textContent.trim()).toBe('room-card works!');
   });
 });
