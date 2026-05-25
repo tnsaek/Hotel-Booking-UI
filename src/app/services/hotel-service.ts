@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Hotel } from '../models/hotel';
 import { map, Observable, timeout } from 'rxjs';
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpParams } from '@angular/common/http';
 import { Room } from '../models/room';
 import { environment } from '../../environments';
+import { ExternalHotelOffer } from '../models/external-hotel-offer';
 
 export interface PagedResponse<T> {
   content: T[];
@@ -71,6 +72,42 @@ export class HotelService {
     return this.http
       .get<PagedResponse<Hotel> | Hotel[]>(`${this.api}?location=${encodeURIComponent(location)}&size=100`)
       .pipe(map((response) => this.extractHotels(response)));
+  }
+
+  searchLiteApiHotels(criteria: {
+    cityName: string;
+    countryCode: string;
+    checkInDate: string;
+    checkOutDate: string;
+    adults: number;
+    roomQuantity: number;
+    currency: string;
+    guestNationality: string;
+  }): Observable<ExternalHotelOffer[]> {
+    const params = new HttpParams()
+      .set('cityName', criteria.cityName)
+      .set('countryCode', criteria.countryCode)
+      .set('checkInDate', criteria.checkInDate)
+      .set('checkOutDate', criteria.checkOutDate)
+      .set('adults', criteria.adults)
+      .set('roomQuantity', criteria.roomQuantity)
+      .set('currency', criteria.currency)
+      .set('guestNationality', criteria.guestNationality);
+
+    return this.publicHttp
+      .get<ExternalHotelOffer[]>(`${this.api}/liteapi/search`, { params })
+      .pipe(timeout(10000));
+  }
+
+  createLiteApiBookableRoom(hotel: ExternalHotelOffer): Observable<Room> {
+    return this.publicHttp.post<Room>(`${this.api}/liteapi/bookable-room`, {
+      hotelId: hotel.hotelId,
+      name: hotel.name,
+      location: hotel.cityCode,
+      address: hotel.address,
+      description: hotel.description,
+      priceTotal: hotel.priceTotal,
+    });
   }
 
   createHotel(hotel: Omit<Hotel, 'id'>): Observable<Hotel> {

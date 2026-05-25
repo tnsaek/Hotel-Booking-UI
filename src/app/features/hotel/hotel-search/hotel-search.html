@@ -1,46 +1,100 @@
 <div class="search-container">
   <div class="search-box">
-    <h2>Search Hotels</h2>
-    
+    <h2>Search LiteAPI Hotels</h2>
+
     <form class="search-form" (ngSubmit)="onSearch()">
       <div class="form-group">
+        <label for="cityName">City</label>
         <input
           type="text"
-          name="searchQuery"
-          placeholder="Hotel name"
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()"
+          id="cityName"
+          name="cityName"
+          placeholder="New York"
+          [(ngModel)]="cityName"
           class="input-field" />
       </div>
 
       <div class="form-group">
+        <label for="countryCode">Country</label>
         <input
           type="text"
-          name="searchLocation"
-          placeholder="Location"
-          [(ngModel)]="searchLocation"
-          (keyup.enter)="onSearch()"
+          id="countryCode"
+          name="countryCode"
+          maxlength="2"
+          placeholder="US"
+          [(ngModel)]="countryCode"
+          class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <label for="checkInDate">Check-in</label>
+        <input
+          type="date"
+          id="checkInDate"
+          name="checkInDate"
+          [(ngModel)]="checkInDate"
+          class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <label for="checkOutDate">Check-out</label>
+        <input
+          type="date"
+          id="checkOutDate"
+          name="checkOutDate"
+          [(ngModel)]="checkOutDate"
+          class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <label for="adults">Adults</label>
+        <input
+          type="number"
+          id="adults"
+          name="adults"
+          min="1"
+          [(ngModel)]="adults"
+          class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <label for="roomQuantity">Rooms</label>
+        <input
+          type="number"
+          id="roomQuantity"
+          name="roomQuantity"
+          min="1"
+          [(ngModel)]="roomQuantity"
+          class="input-field" />
+      </div>
+
+      <div class="form-group">
+        <label for="currency">Currency</label>
+        <input
+          type="text"
+          id="currency"
+          name="currency"
+          maxlength="3"
+          [(ngModel)]="currency"
           class="input-field" />
       </div>
 
       <div class="button-group">
         <button
           type="submit"
-          class="btn-primary">
-          Search
+          class="btn-primary"
+          [disabled]="isSearching">
+          {{ isSearching ? 'Searching...' : 'Search' }}
         </button>
         <button
           type="button"
           (click)="resetSearch()"
+          [disabled]="isSearching"
           class="btn-secondary">
           Reset
         </button>
       </div>
     </form>
-
-    <div *ngIf="isLoadingHotels" class="loading-message">
-      Loading hotels...
-    </div>
 
     <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
@@ -49,25 +103,33 @@
 
   <div class="results-section">
     <h3 *ngIf="!hasSearched" class="welcome-message">
-      🔍 Enter a hotel name or location to get started
+      Enter a destination and dates to search LiteAPI hotel offers.
     </h3>
     <h3 *ngIf="hasSearched && searchResults.length > 0">
-      Found {{ searchResults.length }} hotel(s)
+      Found {{ searchResults.length }} LiteAPI hotel offer(s)
     </h3>
-    <h3 *ngIf="hasSearched && searchResults.length === 0" class="no-results">
-      No hotels found matching your search. Try different keywords.
+    <h3 *ngIf="hasSearched && searchResults.length === 0 && !isSearching" class="no-results">
+      No LiteAPI hotel offers found for this search.
     </h3>
 
     <div class="hotels-grid">
       <div *ngFor="let hotel of searchResults" class="card">
         <h4>{{ hotel.name }}</h4>
-        <p class="location">📍 {{ hotel.location }}</p>
-        <p class="description">{{ hotel.description }}</p>
+        <p class="location">{{ hotel.cityCode }} <span *ngIf="hotel.address">- {{ hotel.address }}</span></p>
+        <p *ngIf="hotel.roomType" class="room-type">{{ hotel.roomType }}</p>
+        <p *ngIf="hotel.description" class="description">{{ hotel.description }}</p>
+        <p *ngIf="hotel.checkInDate && hotel.checkOutDate" class="stay-dates">
+          {{ hotel.checkInDate }} to {{ hotel.checkOutDate }}
+        </p>
+        <p *ngIf="hotel.priceTotal" class="price">
+          {{ hotel.currency }} {{ hotel.priceTotal }}
+        </p>
         <button
           type="button"
-          [routerLink]="['/hotel', hotel.id]"
-          class="btn-view">
-          View Details
+          class="btn-view"
+          (click)="bookHotel(hotel)"
+          [disabled]="bookingHotelId === hotel.hotelId">
+          {{ bookingHotelId === hotel.hotelId ? 'Preparing...' : 'Book Now' }}
         </button>
       </div>
     </div>

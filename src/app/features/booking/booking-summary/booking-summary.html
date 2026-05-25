@@ -1,45 +1,84 @@
-<div class="container"> 
+<div class="container">
     <h2>Booking Summary</h2>
-    <p *ngIf="isLoading && !hasLoadedBookings">Loading bookings...</p>
+    <p *ngIf="isLoading && !hasLoadedBookings" class="state-message">Loading bookings...</p>
     <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-    <p *ngIf="hasLoadedBookings && !isLoading && !errorMessage && bookings.length === 0">There are no bookings made.</p>
-    <div *ngFor="let b of bookings" class="card">
-        <p><b>Booking ID:</b> {{ b.bookingId }}</p>
-        <p><b>Hotel:</b> {{ b.hotelName }}</p>
-        <p><b>Room:</b> {{ b.roomType }}<span *ngIf="b.roomNumber"> - #{{ b.roomNumber }}</span></p>
-        <p><b>Status:</b> {{ b.status }}</p>
-        <p><b>Total Amount:</b> ${{ getDisplayedTotalAmount(b) }}</p>
+    <p *ngIf="hasLoadedBookings && !isLoading && !errorMessage && bookings.length === 0" class="state-message">There are no bookings made.</p>
 
-        <div *ngIf="editingBookingId === b.bookingId; else bookingDates">
-            <p>
-                <b>Check-in:</b>
-                <input type="date" [(ngModel)]="editCheckIn" #checkInInput />
-            </p>
-            <p>
-                <b>Check-out:</b>
-                <input type="date" [(ngModel)]="editCheckOut" #checkOutInput />
-            </p>
-            <button
-                type="button"
-                [disabled]="savingBookingIds.has(b.bookingId)"
-                (click)="saveEdit(b, checkInInput.value, checkOutInput.value)">
-                {{ savingBookingIds.has(b.bookingId) ? 'Saving...' : 'Save' }}
-            </button>
-            <button type="button" (click)="cancelEdit()">Cancel Edit</button>
-        </div>
+    <div class="booking-list">
+        <article *ngFor="let b of bookings; let index = index" class="booking-card">
+            <div class="booking-card__header">
+                <div>
+                    <span class="booking-card__label">Booking {{ index + 1 }}</span>
+                    <h3>Hotel: {{ b.hotelName }}</h3>
+                    <p>Booking ID: {{ b.bookingId }}</p>
+                </div>
+                <span
+                    class="status-badge"
+                    [class.status-badge--cancelled]="b.status === 'CANCELLED'"
+                    [class.status-badge--confirmed]="b.status === 'CONFIRMED'">
+                    {{ b.status }}
+                </span>
+            </div>
 
-        <ng-template #bookingDates>
-            <p><b>Check-in:</b> {{ b.checkIn | date }}</p>
-            <p><b>Check-out:</b> {{ b.checkOut | date }}</p>
-        </ng-template>
+            <div class="booking-details">
+                <div class="detail-item">
+                    <span>Room: </span>
+                    <strong>{{ b.roomType }}<span *ngIf="b.roomNumber"> - #{{ b.roomNumber }}</span></strong>
+                </div>
+                <div class="detail-item">
+                    <span>Total Amount: </span>
+                    <strong>${{ getDisplayedTotalAmount(b) }}</strong>
+                </div>
+                <div class="detail-item">
+                    <span>Status: </span>
+                    <strong>{{ b.status }}</strong>
+                </div>
 
-        <button type="button" *ngIf="canModifyBooking(b) && editingBookingId !== b.bookingId" (click)="startEdit(b)">Update Booking</button>
-        <button
-            type="button"
-            *ngIf="canModifyBooking(b) && editingBookingId !== b.bookingId"
-            [disabled]="cancellingBookingIds.has(b.bookingId)"
-            (click)="cancel(b.bookingId)">
-            {{ cancellingBookingIds.has(b.bookingId) ? 'Cancelling...' : 'Cancel Booking' }}
-        </button>
+                <ng-container *ngIf="editingBookingId !== b.bookingId; else editDates">
+                    <div class="detail-item">
+                        <span>Check-in: </span>
+                        <strong>{{ b.checkIn | date }}</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Check-out: </span>
+                        <strong>{{ b.checkOut | date }}</strong>
+                    </div>
+                </ng-container>
+            </div>
+
+            <ng-template #editDates>
+                <div class="edit-panel">
+                    <label>
+                        Check-in
+                        <input type="date" [(ngModel)]="editCheckIn" #checkInInput />
+                    </label>
+                    <label>
+                        Check-out
+                        <input type="date" [(ngModel)]="editCheckOut" #checkOutInput />
+                    </label>
+                    <div class="booking-actions">
+                        <button
+                            type="button"
+                            class="btn-primary"
+                            [disabled]="savingBookingIds.has(b.bookingId)"
+                            (click)="saveEdit(b, checkInInput.value, checkOutInput.value)">
+                            {{ savingBookingIds.has(b.bookingId) ? 'Saving...' : 'Save' }}
+                        </button>
+                        <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel Edit</button>
+                    </div>
+                </div>
+            </ng-template>
+
+            <div class="booking-actions" *ngIf="canModifyBooking(b) && editingBookingId !== b.bookingId">
+                <button type="button" class="btn-secondary" (click)="startEdit(b)">Update Booking</button>
+                <button
+                    type="button"
+                    class="btn-danger"
+                    [disabled]="cancellingBookingIds.has(b.bookingId)"
+                    (click)="cancel(b.bookingId)">
+                    {{ cancellingBookingIds.has(b.bookingId) ? 'Cancelling...' : 'Cancel Booking' }}
+                </button>
+            </div>
+        </article>
     </div>
 </div>

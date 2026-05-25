@@ -76,11 +76,11 @@ describe('PaymentForm', () => {
   }
 
   function amountInput(): HTMLInputElement {
-    return fixture.nativeElement.querySelector('#amount');
+    return (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>('#amount')!;
   }
 
   function paymentButton(): HTMLButtonElement {
-    return fixture.nativeElement.querySelector('.btn-payment');
+    return (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.btn-payment')!;
   }
 
   it('should create', () => {
@@ -160,6 +160,37 @@ describe('PaymentForm', () => {
     expect(component.bookingAmount).toBeNull();
     expect(amountInput().value).toBe('');
     expect(paymentButton().disabled).toBe(true);
+  });
+
+  it('should start checkout from the template payment button', () => {
+    paymentServiceSpy.processPayment.mockReturnValue(of({
+      status: 'FAILED',
+      transactionId: 'txn_123',
+      checkoutUrl: '',
+    }));
+    bookingServiceSpy.getCachedBookings.mockReturnValue([booking]);
+
+    fixture.detectChanges();
+
+    paymentButton().click();
+    fixture.detectChanges();
+
+    expect(paymentServiceSpy.processPayment).toHaveBeenCalledWith({
+      bookingId: 42,
+      amount: 275,
+    });
+    expect(textContent()).toContain('Unable to start Stripe checkout.');
+  });
+
+  it('should render the submitting button state', () => {
+    component.bookingAmount = 275;
+    component.isLoading = false;
+    component.isSubmitting = true;
+
+    fixture.detectChanges();
+
+    expect(paymentButton().disabled).toBe(true);
+    expect(paymentButton().textContent).toContain('Opening Stripe...');
   });
 
   it('should not start checkout without an amount or while already submitting', () => {

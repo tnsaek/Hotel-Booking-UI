@@ -93,6 +93,28 @@ describe('Navbar', () => {
     return fixture.nativeElement.textContent.replace(/\s+/g, ' ').trim();
   }
 
+  function rootElement(): HTMLElement {
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  function buttonByText(text: string): HTMLButtonElement {
+    const buttons = Array.from(rootElement().querySelectorAll<HTMLButtonElement>('button'));
+    const button = buttons.find((candidate) => candidate.textContent?.includes(text));
+    if (!button) {
+      throw new Error(`Expected button containing "${text}" to exist`);
+    }
+    return button;
+  }
+
+  function linkByText(text: string): HTMLAnchorElement {
+    const links = Array.from(rootElement().querySelectorAll<HTMLAnchorElement>('a'));
+    const link = links.find((candidate) => candidate.textContent?.includes(text));
+    if (!link) {
+      throw new Error(`Expected link containing "${text}" to exist`);
+    }
+    return link;
+  }
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -227,6 +249,72 @@ describe('Navbar', () => {
     expect(pageText).toContain('Manage Rooms');
     expect(pageText).toContain('Logout');
     expect(pageText).not.toContain('Login');
+  });
+
+  it('should call bookings navigation from the My Bookings template link without following href', () => {
+    const goToMyBookingsSpy = vi.spyOn(component, 'goToMyBookings');
+    fixture.detectChanges();
+    const event = new MouseEvent('click', { cancelable: true });
+
+    linkByText('My Bookings').dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(goToMyBookingsSpy).toHaveBeenCalled();
+  });
+
+  it('should toggle notifications from the template button', () => {
+    authServiceSpy.getCurrentUser.mockReturnValue({ id: 7 });
+    authServiceSpy.isAuthenticated.mockReturnValue(true);
+    notificationServiceSpy.getUserNotifications.mockReturnValue(of([]));
+    fixture.detectChanges();
+
+    buttonByText('Notifications').click();
+    fixture.detectChanges();
+
+    expect(component.showNotifications).toBe(true);
+    expect(textContent()).toContain('No notifications.');
+  });
+
+  it('should mark all as read from the template button', () => {
+    authServiceSpy.getCurrentUser.mockReturnValue({ id: 7 });
+    authServiceSpy.isAuthenticated.mockReturnValue(true);
+    notificationServiceSpy.getUserNotifications.mockReturnValue(of([unreadNotification]));
+    notificationServiceSpy.markAllAsRead.mockReturnValue(of(undefined));
+    component.showNotifications = true;
+    fixture.detectChanges();
+
+    buttonByText('Mark all read').click();
+    fixture.detectChanges();
+
+    expect(notificationServiceSpy.markAllAsRead).toHaveBeenCalledWith(7);
+    expect(component.unreadCount).toBe(0);
+  });
+
+  it('should open notification items from the template and render expanded messages', () => {
+    const updated = { ...unreadNotification, read: true };
+    authServiceSpy.getCurrentUser.mockReturnValue({ id: 7 });
+    authServiceSpy.isAuthenticated.mockReturnValue(true);
+    notificationServiceSpy.getUserNotifications.mockReturnValue(of([unreadNotification]));
+    notificationServiceSpy.markAsRead.mockReturnValue(of(updated));
+    component.showNotifications = true;
+    fixture.detectChanges();
+
+    buttonByText('Booking Confirmed').click();
+    fixture.detectChanges();
+
+    expect(notificationServiceSpy.markAsRead).toHaveBeenCalledWith(1);
+    expect(rootElement().querySelector('.notification-item')?.classList.contains('expanded')).toBe(true);
+    expect(textContent()).toContain('Booking confirmed');
+  });
+
+  it('should log out from the template button', () => {
+    authServiceSpy.getCurrentUser.mockReturnValue({ id: 7 });
+    authServiceSpy.isAuthenticated.mockReturnValue(true);
+    fixture.detectChanges();
+
+    buttonByText('Logout').click();
+
+    expect(authServiceSpy.logout).toHaveBeenCalled();
   });
 
   it('should render empty notification menu', () => {

@@ -19,12 +19,16 @@
 
 .search-form {
   display: grid;
-  grid-template-columns: 1fr 1fr auto auto;
+  grid-template-columns: repeat(8, minmax(105px, 1fr)) auto;
   gap: 1rem;
   margin-bottom: 1rem;
   align-items: end;
 
-  @media (max-width: 768px) {
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+  }
+
+  @media (max-width: 680px) {
     grid-template-columns: 1fr;
   }
 }
@@ -32,6 +36,13 @@
 .form-group {
   display: flex;
   flex-direction: column;
+
+  label {
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #495057;
+  }
 }
 
 .input-field {
@@ -170,6 +181,32 @@
     margin: 0.75rem 0 1rem 0;
     flex-grow: 1;
     line-height: 1.4;
+  }
+
+  .room-type {
+    color: #333;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0.75rem 0 0.25rem 0;
+    line-height: 1.35;
+  }
+
+  .stay-dates,
+  .offer-id {
+    color: #555;
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+  }
+
+  .offer-id {
+    overflow-wrap: anywhere;
+  }
+
+  .price {
+    color: #111;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
   }
 }
 

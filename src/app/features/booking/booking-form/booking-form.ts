@@ -34,6 +34,14 @@ export class BookingForm implements OnInit {
 
   ngOnInit(): void {
     this.roomId = Number(this.route.snapshot.paramMap.get('roomId'));
+    const checkIn = this.route.snapshot.queryParamMap.get('checkIn');
+    const checkOut = this.route.snapshot.queryParamMap.get('checkOut');
+    if (checkIn || checkOut) {
+      this.form.patchValue({
+        checkIn: checkIn ?? '',
+        checkOut: checkOut ?? '',
+      });
+    }
   }
 
   futureDateValidator(control: any): any {

@@ -27,8 +27,8 @@ describe('BookingForm', () => {
     bookingId: 123,
     status: 'PENDING',
     totalAmount: 250,
-    checkIn: '2026-05-20',
-    checkOut: '2026-05-21',
+    checkIn: '2026-06-20',
+    checkOut: '2026-06-21',
     roomId: 7,
     roomNumber: 301,
     roomType: 'SUITE',
@@ -55,7 +55,15 @@ describe('BookingForm', () => {
         { provide: BookingService, useValue: bookingServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: Router, useValue: routerSpy },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '7' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: { get: () => '7' },
+              queryParamMap: { get: () => null },
+            },
+          },
+        },
       ],
     }).compileComponents();
 
@@ -64,7 +72,7 @@ describe('BookingForm', () => {
   });
 
   function setValidForm(): void {
-    component.form.setValue({ checkIn: '2026-05-20', checkOut: '2026-05-21' });
+    component.form.setValue({ checkIn: '2026-06-20', checkOut: '2026-06-21' });
   }
 
   function authenticate(user: { id: number } | null = { id: 2 }): void {
@@ -187,8 +195,8 @@ describe('BookingForm', () => {
     expect(bookingServiceSpy.createBooking).toHaveBeenCalledWith({
       userId: 2,
       roomId: 7,
-      checkIn: '2026-05-20',
-      checkOut: '2026-05-21',
+      checkIn: '2026-06-20',
+      checkOut: '2026-06-21',
     });
     expect(bookingServiceSpy.cacheBooking).toHaveBeenCalledWith(2, response);
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/payment', 123]);
@@ -349,9 +357,9 @@ describe('BookingForm', () => {
     bookingServiceSpy.createBooking.mockReturnValue(of(response));
     fixture.detectChanges();
 
-    inputById('checkIn').value = '2026-05-20';
+    inputById('checkIn').value = '2026-06-20';
     inputById('checkIn').dispatchEvent(new Event('input'));
-    inputById('checkOut').value = '2026-05-21';
+    inputById('checkOut').value = '2026-06-21';
     inputById('checkOut').dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
@@ -362,8 +370,8 @@ describe('BookingForm', () => {
     expect(bookingServiceSpy.createBooking).toHaveBeenCalledWith({
       userId: 2,
       roomId: 7,
-      checkIn: '2026-05-20',
-      checkOut: '2026-05-21',
+      checkIn: '2026-06-20',
+      checkOut: '2026-06-21',
     });
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/payment', 123]);
   });

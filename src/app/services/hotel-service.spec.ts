@@ -142,6 +142,67 @@ describe('HotelService', () => {
     request.flush(page);
   });
 
+  it('should search LiteAPI hotels', () => {
+    const offer = {
+      provider: 'LiteAPI',
+      hotelId: 'lp19d80',
+      name: 'Paris Central',
+      cityCode: 'PAR',
+      priceTotal: '420.00',
+      currency: 'USD',
+    };
+
+    service
+      .searchLiteApiHotels({
+        cityName: 'Paris',
+        countryCode: 'FR',
+        checkInDate: '2026-06-01',
+        checkOutDate: '2026-06-05',
+        adults: 2,
+        roomQuantity: 1,
+        currency: 'USD',
+        guestNationality: 'US',
+      })
+      .subscribe((response) => {
+        expect(response).toEqual([offer]);
+      });
+
+    const request = httpMock.expectOne(
+      `${environment.apiUrl}/hotels/liteapi/search?cityName=Paris&countryCode=FR&checkInDate=2026-06-01&checkOutDate=2026-06-05&adults=2&roomQuantity=1&currency=USD&guestNationality=US`
+    );
+    expect(request.request.method).toBe('GET');
+    request.flush([offer]);
+  });
+
+  it('should create a bookable room from a LiteAPI hotel offer', () => {
+    const offer = {
+      provider: 'LiteAPI',
+      hotelId: 'lp19d80',
+      name: 'Paris Central',
+      cityCode: 'Paris, FR',
+      address: '1 Rue Example',
+      description: 'Breakfast Included',
+      priceTotal: '420.00',
+      currency: 'USD',
+    };
+
+    service.createLiteApiBookableRoom(offer).subscribe((response) => {
+      expect(response).toEqual(room);
+    });
+
+    const request = httpMock.expectOne(`${environment.apiUrl}/hotels/liteapi/bookable-room`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      hotelId: 'lp19d80',
+      name: 'Paris Central',
+      location: 'Paris, FR',
+      address: '1 Rue Example',
+      description: 'Breakfast Included',
+      priceTotal: '420.00',
+    });
+    request.flush(room);
+  });
+
   it('should create, update, and delete hotels', () => {
     const payload = { name: 'A', location: 'B', description: 'C' };
 
