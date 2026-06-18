@@ -139,6 +139,26 @@ describe('BookingService', () => {
     expect(service.getCachedBookings(7)[0].totalAmount).toBe(999);
   });
 
+  it('should update cached booking status when the user has no existing cache', () => {
+    service.updateCachedBookingStatus(7, 1, 'CANCELLED');
+
+    expect(service.getCachedBookings(7)).toEqual([]);
+  });
+
+  it('should leave non-matching cached bookings unchanged when updating status', () => {
+    service.replaceCachedBookings(7, [bookingA]);
+
+    service.updateCachedBookingStatus(7, 999, 'CANCELLED');
+
+    expect(service.getCachedBookings(7)).toEqual([bookingA]);
+  });
+
+  it('should update cached booking when the user has no existing cache', () => {
+    service.updateCachedBooking(7, bookingA);
+
+    expect(service.getCachedBookings(7)).toEqual([bookingA]);
+  });
+
   it('should merge bookings by id and sort descending', () => {
     const merged = service.mergeBookings(
       [bookingA, { ...bookingB, totalAmount: 111 }],

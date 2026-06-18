@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 
 import { BookingResponse } from '../../../models/booking-response';
 import { AuthService } from '../../../services/auth-service';
@@ -191,6 +191,19 @@ describe('PaymentForm', () => {
 
     expect(paymentButton().disabled).toBe(true);
     expect(paymentButton().textContent).toContain('Opening Stripe...');
+  });
+
+  it('should render the loading state without the payment form', () => {
+    const booking$ = new Subject<BookingResponse>();
+    authServiceSpy.getCurrentUser.mockReturnValue(null);
+    bookingServiceSpy.getBooking.mockReturnValue(booking$);
+
+    fixture.detectChanges();
+
+    expect(textContent()).toContain('Loading payment details...');
+    expect((fixture.nativeElement as HTMLElement).querySelector('.payment-form')).toBeNull();
+    booking$.next(booking);
+    booking$.complete();
   });
 
   it('should not start checkout without an amount or while already submitting', () => {

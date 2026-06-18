@@ -1,0 +1,64 @@
+<section class="chatbot-widget" [class.chatbot-widget--open]="isOpen">
+  <button
+    type="button"
+    class="chatbot-launcher"
+    aria-label="Open hotel assistant"
+    [attr.aria-expanded]="isOpen"
+    (click)="toggleOpen()"
+  >
+    <span aria-hidden="true">{{ isOpen ? 'x' : '?' }}</span>
+  </button>
+
+  <div class="chatbot-panel" *ngIf="isOpen" role="dialog" aria-label="Hotel assistant">
+    <header class="chatbot-header">
+      <div>
+        <h2>Hotel Assistant</h2>
+        <p>Ask about rooms, prices, amenities, bookings, or support.</p>
+      </div>
+      <button type="button" class="icon-button" aria-label="Close hotel assistant" (click)="toggleOpen()">x</button>
+    </header>
+
+    <div class="chatbot-messages" aria-live="polite">
+      <div *ngIf="messages.length === 0" class="empty-state">
+        <strong>How can I help?</strong>
+        <span>Try asking about available rooms, pricing, amenities, or cancellation policy.</span>
+      </div>
+
+      <article
+        *ngFor="let message of messages"
+        class="message"
+        [class.message--user]="message.role === 'user'"
+        [class.message--assistant]="message.role === 'assistant'"
+      >
+        <div class="message-content">{{ message.content }}</div>
+      </article>
+
+      <div *ngIf="isSending" class="message message--assistant">
+        <div class="message-content">Checking verified hotel information...</div>
+      </div>
+    </div>
+
+    <p *ngIf="errorMessage" class="chatbot-error">{{ errorMessage }}</p>
+
+    <form class="chatbot-composer" (ngSubmit)="sendMessage()">
+      <label class="sr-only" for="chatbot-message">Message</label>
+      <textarea
+        id="chatbot-message"
+        name="chatbot-message"
+        [(ngModel)]="draftMessage"
+        [disabled]="isSending"
+        rows="2"
+        placeholder="Ask a question"
+        (keydown)="onComposerKeydown($event)"
+      ></textarea>
+      <div class="composer-actions">
+        <button type="button" class="secondary-button" [disabled]="isSending || messages.length === 0" (click)="clearConversation()">
+          Clear
+        </button>
+        <button type="submit" class="send-button" [disabled]="isSending || !draftMessage.trim()">
+          Send
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

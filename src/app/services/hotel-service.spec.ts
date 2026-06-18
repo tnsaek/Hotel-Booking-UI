@@ -64,6 +64,15 @@ describe('HotelService', () => {
     request.flush(page);
   });
 
+  it('should default missing paged hotel content to an empty list', () => {
+    service.getHotels().subscribe((hotels) => {
+      expect(hotels).toEqual([]);
+    });
+
+    const request = httpMock.expectOne(`${environment.apiUrl}/hotels?size=100`);
+    request.flush({ ...page, content: undefined });
+  });
+
   it('should get hotels from an array response', () => {
     service.getHotels().subscribe((hotels) => {
       expect(hotels).toEqual([hotel]);

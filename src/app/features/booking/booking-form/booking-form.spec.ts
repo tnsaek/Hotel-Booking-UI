@@ -22,6 +22,7 @@ describe('BookingForm', () => {
   let routerSpy: {
     navigate: ReturnType<typeof vi.fn>;
   };
+  let queryParams: Record<string, string | null>;
 
   const response: BookingResponse = {
     bookingId: 123,
@@ -36,6 +37,7 @@ describe('BookingForm', () => {
   };
 
   beforeEach(async () => {
+    queryParams = {};
     bookingServiceSpy = {
       createBooking: vi.fn(),
       cacheBooking: vi.fn(),
@@ -60,7 +62,7 @@ describe('BookingForm', () => {
           useValue: {
             snapshot: {
               paramMap: { get: () => '7' },
-              queryParamMap: { get: () => null },
+              queryParamMap: { get: (key: string) => queryParams[key] ?? null },
             },
           },
         },
@@ -108,6 +110,30 @@ describe('BookingForm', () => {
     component.ngOnInit();
 
     expect(component.roomId).toBe(7);
+  });
+
+  it('should patch both query date params on init', () => {
+    queryParams = { checkIn: '2026-06-20', checkOut: '2026-06-21' };
+
+    component.ngOnInit();
+
+    expect(component.form.value).toEqual({ checkIn: '2026-06-20', checkOut: '2026-06-21' });
+  });
+
+  it('should patch only check-in query param on init', () => {
+    queryParams = { checkIn: '2026-06-20' };
+
+    component.ngOnInit();
+
+    expect(component.form.value).toEqual({ checkIn: '2026-06-20', checkOut: '' });
+  });
+
+  it('should patch only check-out query param on init', () => {
+    queryParams = { checkOut: '2026-06-21' };
+
+    component.ngOnInit();
+
+    expect(component.form.value).toEqual({ checkIn: '', checkOut: '2026-06-21' });
   });
 
   it('should get today date', () => {

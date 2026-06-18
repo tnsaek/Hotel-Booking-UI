@@ -1,12 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { App } from './app';
+import { ChatbotService } from './services/chatbot-service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ChatbotService,
+          useValue: {
+            sendMessage: vi.fn().mockReturnValue(of({ response: 'Assistant response' })),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
@@ -24,5 +34,6 @@ describe('App', () => {
     expect(compiled.querySelector('app-navbar')).toBeTruthy();
     expect(compiled.querySelector('main app-footer')).toBeFalsy();
     expect(compiled.querySelector('app-footer')).toBeTruthy();
+    expect(compiled.querySelector('app-chatbot')).toBeTruthy();
   });
 });
